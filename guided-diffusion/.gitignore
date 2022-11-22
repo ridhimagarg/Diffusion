@@ -1,0 +1,3 @@
+datasets/
+evaluations/VIRTUAL_lsun_bedroom256.npz
+wandb/
