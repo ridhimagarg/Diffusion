@@ -1,0 +1,7 @@
+Logging to /var/tmp/openai-2022-09-16-12-25-36-013874
+creating model and diffusion...
+sampling...
+created 4 samples
+created 8 samples
+saving to /var/tmp/openai-2022-09-16-12-25-36-013874/samples_5x256x256x3.npz
+sampling complete
