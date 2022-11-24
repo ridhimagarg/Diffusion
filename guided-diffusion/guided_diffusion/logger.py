@@ -15,9 +15,13 @@ import warnings
 from collections import defaultdict
 from contextlib import contextmanager
 
+from guided_diffusion.wandb_util import wandb_setup
 # import wandb
 # wandb.init(project="Diffusion-Ridhima", entity="robofied")
 # WANDB_API_KEY = '086e3f5d98b58ab5e34f2814915b14c0ab230bfc'
+
+wandb = wandb_setup()
+wandb.log({"Hello, starting there..":"hello"})
 
 DEBUG = 10
 INFO = 20
@@ -371,7 +375,7 @@ class Logger(object):
                 d["dummy"] = 1  # so we don't get a warning about empty dict
         # print("logger file", self.name2val)
         for key, value in self.name2val.items():
-            # wandb.log({key:value})
+            wandb.log({key:value})
             log({key:value})
         out = d.copy()  # Return the dict for unit testing purposes
         for fmt in self.output_formats:
