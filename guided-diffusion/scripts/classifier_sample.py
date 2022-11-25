@@ -5,6 +5,7 @@ process towards more realistic images.
 
 import argparse
 import os
+import datetime
 
 import numpy as np
 import torch as th
@@ -27,7 +28,7 @@ def main():
     args = create_argparser().parse_args()
 
     dist_util.setup_dist()
-    logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert/results", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
+    logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
 
     logger.log("creating model and diffusion...")
     model, diffusion = create_model_and_diffusion(
@@ -104,6 +105,7 @@ def main():
         shape_str = "x".join([str(x) for x in arr.shape])
         out_path = os.path.join(logger.get_dir(), f"samples_{shape_str}.npz")
         logger.log(f"saving to {out_path}")
+        print("Label array", label_arr)
         np.savez(out_path, arr, label_arr)
 
     dist.barrier()

@@ -5,6 +5,7 @@ numpy array. This can be used to produce samples for FID evaluation.
 
 import argparse
 import os
+import datetime
 
 import numpy as np
 import torch as th
@@ -24,7 +25,7 @@ def main():
     args = create_argparser().parse_args()
 
     dist_util.setup_dist()
-    logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert/results", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
+    logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/diffusionsample", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
 
     logger.log("creating model and diffusion...")
     model, diffusion = create_model_and_diffusion(

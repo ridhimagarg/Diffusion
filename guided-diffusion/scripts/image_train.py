@@ -3,6 +3,8 @@ Train a diffusion model on images.
 """
 
 import argparse
+import datetime
+import os
 
 from guided_diffusion import dist_util, logger
 from guided_diffusion.image_datasets import load_data
@@ -14,13 +16,16 @@ from guided_diffusion.script_util import (
     add_dict_to_argparser,
 )
 from guided_diffusion.train_util import TrainLoop
+from guided_diffusion.gpu_util import set_gpu_use
+
+set_gpu_use(7)
 
 
 def main():
     args = create_argparser().parse_args()
 
     dist_util.setup_dist()
-    logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert/results", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
+    logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/diffusiontrain", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
 
     logger.log("creating model and diffusion...")
     model, diffusion = create_model_and_diffusion(
@@ -38,6 +43,9 @@ def main():
     )
 
     logger.log("training...")
+
+    logger.log(args)
+
     TrainLoop(
         model=model,
         diffusion=diffusion,

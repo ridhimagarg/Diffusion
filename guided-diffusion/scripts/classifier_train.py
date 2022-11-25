@@ -4,6 +4,7 @@ Train a noised image classifier on ImageNet.
 
 import argparse
 import os
+import datetime
 
 import blobfile as bf
 import torch as th
@@ -25,14 +26,14 @@ from guided_diffusion.script_util import (
 from guided_diffusion.train_util import parse_resume_step_from_filename, log_loss_dict
 from guided_diffusion.gpu_util import set_gpu_use
 
-set_gpu_use()
+set_gpu_use(8)
 
 
 def main():
     args = create_argparser().parse_args()
 
     dist_util.setup_dist()
-    logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert/results", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
+    logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiertrain", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
 
     logger.log("creating model and diffusion...")
     model, diffusion = create_classifier_and_diffusion(
