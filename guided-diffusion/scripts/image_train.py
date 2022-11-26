@@ -18,7 +18,7 @@ from guided_diffusion.script_util import (
 from guided_diffusion.train_util import TrainLoop
 from guided_diffusion.gpu_util import set_gpu_use
 
-set_gpu_use(7)
+set_gpu_use(5)
 
 
 def main():
@@ -44,7 +44,7 @@ def main():
 
     logger.log("training...")
 
-    logger.log(args)
+    logger.log(f"Arguments pass while training diffusion {args}")
 
     TrainLoop(
         model=model,

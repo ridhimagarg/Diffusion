@@ -36,6 +36,7 @@ def main():
     logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiertrain", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
 
     logger.log("creating model and diffusion...")
+    logger.log(f"Arguments pass while training classifier {args}")
     model, diffusion = create_classifier_and_diffusion(
         **args_to_dict(args, classifier_and_diffusion_defaults().keys())
     )

@@ -70,6 +70,7 @@ def main():
     all_labels = []
     while len(all_images) * args.batch_size < args.num_samples:
         model_kwargs = {}
+        logger.log(f"NUM Classes {NUM_CLASSES}")
         classes = th.randint(
             low=0, high=NUM_CLASSES, size=(args.batch_size,), device=dist_util.dev()
         )
@@ -92,7 +93,9 @@ def main():
         gathered_samples = [th.zeros_like(sample) for _ in range(dist.get_world_size())]
         dist.all_gather(gathered_samples, sample)  # gather not supported with NCCL
         all_images.extend([sample.cpu().numpy() for sample in gathered_samples])
+        logger.log(f"Classes {classes}")
         gathered_labels = [th.zeros_like(classes) for _ in range(dist.get_world_size())]
+        logger.log(f"Gathered labels {gathered_labels}")
         dist.all_gather(gathered_labels, classes)
         all_labels.extend([labels.cpu().numpy() for labels in gathered_labels])
         logger.log(f"created {len(all_images) * args.batch_size} samples")

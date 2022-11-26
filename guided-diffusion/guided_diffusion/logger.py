@@ -20,7 +20,7 @@ from guided_diffusion.wandb_util import wandb_setup
 # wandb.init(project="Diffusion-Ridhima", entity="robofied")
 # WANDB_API_KEY = '086e3f5d98b58ab5e34f2814915b14c0ab230bfc'
 
-wandb = wandb_setup("Classifier")
+wandb = wandb_setup("Diffusion")
 wandb.log({"Hello, starting there..":"hello"})
 
 DEBUG = 10
