@@ -3,23 +3,27 @@ import matplotlib.pyplot as plt
 import cv2
 import os
 
-path = "../samples/openai-2022-09-17-11-08-57-608453"
-array = np.load(os.path.join(path, "samples_100x256x256x3.npz"))
+# path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-11-25-22-09-07-713511-1000classes_script"
+path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations_base"
+array = np.load(os.path.join(path, "VIRTUAL_imagenet128_labeled.npz"))
 
 print(array.files)
 
-samples = array["arr_0"]
+# print(array['arr_0'].shape)
+print(array['arr_0'][0])
 
-print(samples)
+# samples = array["arr_0"]
 
-print(samples[0].shape)
+# print(samples)
 
-for img_idx in range(samples.shape[0]):
+# print(samples[0].shape)
 
-    filename = "sample_" + str(img_idx) + ".png"
-    cv2.imshow("test", samples[img_idx])
-    cv2.waitKey(0) 
+# for img_idx in range(samples.shape[0]):
+
+#     filename = "sample_" + str(img_idx) + ".png"
+#     cv2.imshow("test", samples[img_idx])
+#     cv2.waitKey(0) 
   
-    #closing all open windows 
-    cv2.destroyAllWindows() 
-    cv2.imwrite(os.path.join(path, filename), samples[img_idx])
+#     #closing all open windows 
+#     cv2.destroyAllWindows() 
+#     cv2.imwrite(os.path.join(path, filename), samples[img_idx])
