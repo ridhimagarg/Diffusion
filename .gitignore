@@ -10,6 +10,7 @@ guided-diffusion/datasets
 guided-diffusion/evaluations/VIRTUAL_lsun_bedroom256.npz
 guided-diffusion/wandb
 guided-diffusion/results
+guided-diffusion/classify_image_graph_def.pb
 
 
 guided-diffusion-2/dataset
