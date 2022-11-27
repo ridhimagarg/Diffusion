@@ -21,12 +21,12 @@ print(len(filtered_data))
 # os.mkdir("CheXpert/healthy")
 # os.mkdir(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert", "healthy"))
 
-for row in filtered_data.iterrows():
-    # print(row)
-    if int(row[1]["Pleural Effusion"]) == 1:
-        name = row[1]["Path"].split("/")
-        shutil.copy(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset" ,row[1]["Path"]), os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert", "diseased_" + name[2]+ name[3]+ name[4]))
-    if int(row[1]["Pleural Effusion"]) == 0:
-        name = row[1]["Path"].split("/")
-        shutil.copy(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset" ,row[1]["Path"]), os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert", "healthy_" + name[2]+ name[3]+ name[4]))
+# for row in filtered_data.iterrows():
+#     # print(row)
+#     if int(row[1]["Pleural Effusion"]) == 1:
+#         name = row[1]["Path"].split("/")
+#         shutil.copy(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset" ,row[1]["Path"]), os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert", "diseased_" + name[2]+ name[3]+ name[4]))
+#     if int(row[1]["Pleural Effusion"]) == 0:
+#         name = row[1]["Path"].split("/")
+#         shutil.copy(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset" ,row[1]["Path"]), os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert", "healthy_" + name[2]+ name[3]+ name[4]))
 
