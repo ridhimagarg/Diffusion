@@ -56,13 +56,13 @@ def main():
     print("computing/reading sample batch statistics...")
     sample_stats, sample_stats_spatial = evaluator.read_statistics(args.sample_batch, sample_acts)
 
-    print("Computing evaluations...")
-    print("Inception Score:", evaluator.compute_inception_score(sample_acts[0]))
-    print("FID:", sample_stats.frechet_distance(ref_stats))
-    print("sFID:", sample_stats_spatial.frechet_distance(ref_stats_spatial))
+    logger.log("Computing evaluations...")
+    logger.log("Inception Score:", evaluator.compute_inception_score(sample_acts[0]))
+    logger.log("FID:", sample_stats.frechet_distance(ref_stats))
+    logger.log("sFID:", sample_stats_spatial.frechet_distance(ref_stats_spatial))
     prec, recall = evaluator.compute_prec_recall(ref_acts[0], sample_acts[0])
-    print("Precision:", prec)
-    print("Recall:", recall)
+    logger.log("Precision:", prec)
+    logger.log("Recall:", recall)
 
 
 class InvalidFIDException(Exception):
