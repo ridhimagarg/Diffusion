@@ -31,6 +31,9 @@ def main():
     logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
 
     logger.log("creating model and diffusion...")
+
+    logger.log(f"Arguments while sampling images {args}")
+
     model, diffusion = create_model_and_diffusion(
         **args_to_dict(args, model_and_diffusion_defaults().keys())
     )

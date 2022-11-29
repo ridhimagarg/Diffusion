@@ -2,8 +2,8 @@ Classifier
 ===========
 
 TRAIN_FLAGS="--iterations 300000 --anneal_lr True --batch_size 32 --lr 3e-4 --save_interval 1000 --weight_decay 0.05"
-CLASSIFIER_FLAGS="--image_size 256 --classifier_attention_resolutions 32,16,8 --classifier_depth 2 --classifier_width 128 --classifier_pool attention --classifier_resblock_updown True --classifier_use_scale_shift_norm True"
 python scripts/classifier_train.py --data_dir /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert $TRAIN_FLAGS $CLASSIFIER_FLAGS
+CLASSIFIER_FLAGS="--image_size 256 --classifier_attention_resolutions 32,16,8 --classifier_depth 2 --classifier_width 128 --classifier_pool attention --classifier_resblock_updown True --classifier_use_scale_shift_norm True"
 
 
 Diffusion
@@ -27,3 +27,5 @@ Evaluations
 ============
 python evaluations/evaluator.py /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-11-25-22-09-07-713511-1000classes_script/samples_40x256x256x3.npz /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-11-26-10-12-16-428233-1000classes_script/samples_10x256x256x3.npz
 
+## CheXpert dataset
+python evaluations/evaluator.py /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations_base/500_256_256_3_reference_batch.npz /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-11-27-12-34-15-806086_100samples/samples_100x256x256x3.npz

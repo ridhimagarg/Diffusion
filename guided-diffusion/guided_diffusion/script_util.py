@@ -254,7 +254,7 @@ def create_classifier(
         image_size=image_size,
         in_channels=3,
         model_channels=classifier_width,
-        out_channels=1000,
+        out_channels=NUM_CLASSES, ## changed this on 27.11.2022
         num_res_blocks=classifier_depth,
         attention_resolutions=tuple(attention_ds),
         channel_mult=channel_mult,
