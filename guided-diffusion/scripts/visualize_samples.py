@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import cv2
 import os
 
-# path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-11-25-22-09-07-713511-1000classes_script"
-path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-11-27-11-28-28-181880_testing"
+path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-12-01-19-36-43-594498"
+# path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations_base"
 array = np.load(os.path.join(path, "samples_10x256x256x3.npz"))
 foldername = "samples_10x256x256x3"
 

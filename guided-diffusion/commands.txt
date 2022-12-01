@@ -1,9 +1,9 @@
 Classifier
 ===========
 
-TRAIN_FLAGS="--iterations 300000 --anneal_lr True --batch_size 32 --lr 3e-4 --save_interval 1000 --weight_decay 0.05"
-python scripts/classifier_train.py --data_dir /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert $TRAIN_FLAGS $CLASSIFIER_FLAGS
+TRAIN_FLAGS="--iterations 300000 --anneal_lr True --batch_size 32 --lr 3e-4 --save_interval 5000 --weight_decay 0.05"
 CLASSIFIER_FLAGS="--image_size 256 --classifier_attention_resolutions 32,16,8 --classifier_depth 2 --classifier_width 128 --classifier_pool attention --classifier_resblock_updown True --classifier_use_scale_shift_norm True"
+python scripts/classifier_train.py --data_dir /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert $TRAIN_FLAGS $CLASSIFIER_FLAGS
 
 
 Diffusion
@@ -19,7 +19,9 @@ Sampling
 ==========
 
 SAMPLE_FLAGS="--batch_size 4 --num_samples 100 --timestep_respacing 250"
-MODEL_FLAGS="--attention_resolutions 32,16,8 --class_cond True --diffusion_steps 1000 --image_size 256 --learn_sigma True --noise_schedule linear --num_channels 256 --num_head_channels 64 --num_res_blocks 2 --resblock_updown True --use_fp16 True --use_scale_shift_norm True"
+MODEL_FLAGS="--attention_resolutions 32,16,8 --class_cond True --diffusion_steps 1000 --image_size 256 --learn_sigma True --noise_schedule linear --num_channels 128 --num_head_channels 64 --num_res_blocks 3 --resblock_updown True --use_fp16 True --use_scale_shift_norm True"
+
+MODEL_FLAGS="--image_size 256 --num_channels 128 --num_res_blocks 3 --class_cond True --classifier_attention_resolutions 32,16,8 --classifier_depth 2 --classifier_width 128 --classifier_pool attention --classifier_resblock_updown True --classifier_use_scale_shift_norm True"
 python scripts/classifier_sample.py $MODEL_FLAGS --classifier_scale 1.0 --classifier_path /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiertrain/openai-2022-09-16-18-20-40-646640/model070000.pt --model_path /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiertrain/openai-2022-09-16-18-20-40-646640/model040000.pt $SAMPLE_FLAGS
 
 
@@ -29,3 +31,8 @@ python evaluations/evaluator.py /mount/arbeitsdaten/mudcat/Resources/Multimedia-
 
 ## CheXpert dataset
 python evaluations/evaluator.py /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations_base/500_256_256_3_reference_batch.npz /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-11-27-12-34-15-806086_100samples/samples_100x256x256x3.npz
+
+
+
+
+/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations_base/500_256_256_3_reference_batch.npz /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-11-27-12-34-15-806086_100samples1attempt2classes/samples_100x256x256x3.npz

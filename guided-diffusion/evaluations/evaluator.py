@@ -11,6 +11,7 @@ from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 from typing import Iterable, Optional, Tuple
 from guided_diffusion import logger
+import datetime
 
 import numpy as np
 import requests
@@ -31,9 +32,12 @@ def main():
     parser.add_argument("sample_batch", help="path to sample batch npz file")
     args = parser.parse_args()
 
+    print(args)
     logger.configure(dir=os.path.join(
-        "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations", args["ref_batch"].split("/")[-1],args["sample_batch"].split("/")[-1],
+        "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations", args.ref_batch.split("/")[-1] + args.sample_batch.split("/")[-1] +
         datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
+
+    logger.log(f"Arguments passe {args}")
 
     config = tf.ConfigProto(
         allow_soft_placement=True  # allows DecodeJpeg to run on CPU in Inception graph

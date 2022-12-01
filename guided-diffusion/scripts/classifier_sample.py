@@ -22,7 +22,9 @@ from guided_diffusion.script_util import (
     add_dict_to_argparser,
     args_to_dict,
 )
+from guided_diffusion.gpu_util import set_gpu_use
 
+set_gpu_use(7)
 
 def main():
     args = create_argparser().parse_args()
