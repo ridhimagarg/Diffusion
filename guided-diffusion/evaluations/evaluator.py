@@ -129,6 +129,11 @@ class FIDStatistics:
 
         tr_covmean = np.trace(covmean)
 
+        logger.log("Cov trace", covmean)
+        logger.log("Dot of diff and diff", diff.dot(diff))
+        logger.log("Sigma1 trace", np.trace(sigma1))
+        logger.log("Sigma2 trace", np.trace(sigma2))
+
         return diff.dot(diff) + np.trace(sigma1) + np.trace(sigma2) - 2 * tr_covmean
 
 
