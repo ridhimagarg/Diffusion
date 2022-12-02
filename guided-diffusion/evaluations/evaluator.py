@@ -89,8 +89,14 @@ class FIDStatistics:
         mu1 = np.atleast_1d(mu1)
         mu2 = np.atleast_1d(mu2)
 
+        logger.log("mean of 1st batch", mu1)
+        logger.log("mean of 2nd batch", mu2)
+
         sigma1 = np.atleast_2d(sigma1)
         sigma2 = np.atleast_2d(sigma2)
+
+        logger.log("variance of 1st batch", sigma1)
+        logger.log("variance of 2nd batch", sigma2)
 
         assert (
             mu1.shape == mu2.shape
@@ -100,6 +106,8 @@ class FIDStatistics:
         ), f"Training and test covariances have different dimensions: {sigma1.shape}, {sigma2.shape}"
 
         diff = mu1 - mu2
+
+        logger.log("Difference between mean of both batches", diff)
 
         # product might be almost singular
         covmean, _ = linalg.sqrtm(sigma1.dot(sigma2), disp=False)
