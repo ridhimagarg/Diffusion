@@ -13,6 +13,7 @@ import torch as th
 
 from .nn import mean_flat
 from .losses import normal_kl, discretized_gaussian_log_likelihood
+import cv2
 
 
 def get_named_beta_schedule(schedule_name, num_diffusion_timesteps):
@@ -475,6 +476,7 @@ class GaussianDiffusion:
                 )
                 yield out
                 img = out["sample"]
+                cv2.imshow("diffused", img)
 
     def ddim_sample(
         self,
