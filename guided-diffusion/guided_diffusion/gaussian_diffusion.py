@@ -13,6 +13,9 @@ import torch as th
 
 from .nn import mean_flat
 from .losses import normal_kl, discretized_gaussian_log_likelihood
+import cv2
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 
 def get_named_beta_schedule(schedule_name, num_diffusion_timesteps):
@@ -519,6 +522,8 @@ class GaussianDiffusion:
 
             indices = tqdm(indices)
 
+        fig = plt.figure()
+        ims = []
         for i in indices:
             t = th.tensor([i] * shape[0], device=device)
             with th.no_grad():
@@ -533,6 +538,16 @@ class GaussianDiffusion:
                 )
                 yield out
                 img = out["sample"]
+                img_viz = ((img + 1) * 127.5).clamp(0, 255).to(th.uint8)
+                img_viz = img_viz.permute(0, 2, 3, 1)
+                # print(img_viz.cpu().detach().numpy()[0].shape)
+                im = plt.imshow(img_viz.cpu().detach().numpy()[0])
+                ims.append([im])
+                
+        ani = animation.ArtistAnimation(fig, ims, interval=50, blit=True,
+                repeat_delay=1000)
+
+        ani.save("visualization/image_viz.mp4")
 
     def ddim_sample(
         self,
@@ -805,6 +820,7 @@ class GaussianDiffusion:
                 ModelMeanType.START_X: x_start,
                 ModelMeanType.EPSILON: noise,
             }[self.model_mean_type]
+            # print(model_output.shape, target.shape, x_start.shape)
             assert model_output.shape == target.shape == x_start.shape
             terms["mse"] = mean_flat((target - model_output) ** 2)
             if "vb" in terms:

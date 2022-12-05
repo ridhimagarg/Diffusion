@@ -167,7 +167,7 @@ def create_model(
         image_size=image_size,
         in_channels=3,
         model_channels=num_channels,
-        out_channels= 6,#(3 if not learn_sigma else 6), ## Changed on 01.12.2022
+        out_channels= (3 if not learn_sigma else 6), #6 ## Changed on 01.12.2022
         num_res_blocks=num_res_blocks,
         attention_resolutions=tuple(attention_ds),
         dropout=dropout,
