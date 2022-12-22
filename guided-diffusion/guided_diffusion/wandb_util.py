@@ -3,7 +3,8 @@ import wandb
 
 
 def wandb_setup(group_name):
-    return wandb.init(project="Diffusion", entity="universityfau")
+    return wandb.init(project="Diffusion-free", entity="ridhimagarg")
+    # return wandb.init(project="Diffusion", entity="universityfau")
     # return wandb.init(project="Diffusion-Ridhima", entity="robofied")
     # return wandb.init(project="Diffusion", entity="team_uni_stuttgart", group=group_name)
     # WANDB_API_KEY = 'fa8770add2e41bde69cf6061e33e4c51e9cdd676'

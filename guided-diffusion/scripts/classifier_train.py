@@ -26,7 +26,7 @@ from guided_diffusion.script_util import (
 from guided_diffusion.train_util import parse_resume_step_from_filename, log_loss_dict
 from guided_diffusion.gpu_util import set_gpu_use
 
-set_gpu_use(8)
+set_gpu_use(0)
 
 
 def main():

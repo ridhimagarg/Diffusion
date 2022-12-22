@@ -24,7 +24,7 @@ from guided_diffusion.script_util import (
 )
 from guided_diffusion.gpu_util import set_gpu_use
 
-set_gpu_use(7)
+set_gpu_use(2)
 
 def main():
     args = create_argparser().parse_args()

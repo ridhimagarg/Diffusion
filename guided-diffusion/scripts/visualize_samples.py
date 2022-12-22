@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import cv2
 import os
 
-path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-12-05-16-58-02-550873"
+path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-12-20-15-56-38-239194"
 # path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations_base"
-array = np.load(os.path.join(path, "samples_1x256x256x3.npz"))
-foldername = "samples_1x256x256x3"
+array = np.load(os.path.join(path, "samples_100x256x256x3.npz"))
+foldername = "samples_100x256x256x3"
 
 print(array.files)
 

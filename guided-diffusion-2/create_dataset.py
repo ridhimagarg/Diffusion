@@ -2,7 +2,7 @@ import pandas as pd
 import shutil
 import os
 
-data = pd.read_csv("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert-v1.0-small/train.csv")
+data = pd.read_csv("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert-v1.0-small/valid.csv")
 
 print(len(data))
 
@@ -16,17 +16,17 @@ filtered_data = data[(data["Pleural Effusion"] == 1) | (data["Pleural Effusion"]
 print(filtered_data)
 print(len(filtered_data))
 
-# os.mkdir("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert")
+os.mkdir("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertValidation")
 # os.mkdir(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert", "diseased"))
 # os.mkdir("CheXpert/healthy")
 # os.mkdir(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert", "healthy"))
 
-# for row in filtered_data.iterrows():
-#     # print(row)
-#     if int(row[1]["Pleural Effusion"]) == 1:
-#         name = row[1]["Path"].split("/")
-#         shutil.copy(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset" ,row[1]["Path"]), os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert", "diseased_" + name[2]+ name[3]+ name[4]))
-#     if int(row[1]["Pleural Effusion"]) == 0:
-#         name = row[1]["Path"].split("/")
-#         shutil.copy(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset" ,row[1]["Path"]), os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert", "healthy_" + name[2]+ name[3]+ name[4]))
+for row in filtered_data.iterrows():
+    # print(row)
+    if int(row[1]["Pleural Effusion"]) == 1:
+        name = row[1]["Path"].split("/")
+        shutil.copy(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset" ,row[1]["Path"]), os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertValidation", "diseased_" + name[2]+ name[3]+ name[4]))
+    if int(row[1]["Pleural Effusion"]) == 0:
+        name = row[1]["Path"].split("/")
+        shutil.copy(os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset" ,row[1]["Path"]), os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertValidation", "healthy_" + name[2]+ name[3]+ name[4]))
 

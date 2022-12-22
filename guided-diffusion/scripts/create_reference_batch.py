@@ -12,7 +12,7 @@ path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert
 
 files = os.listdir(path)
 
-files_selected = random.choices(files, k=5000)
+files_selected = random.choices(files, k=10000)
 # print(files_selected)
 
 images = []
@@ -28,6 +28,6 @@ for img_file in files_selected:
 # print(images)
 print(np.array(images).shape)
 
-np.savez("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations_base/5000_256_256_3_reference_batch.npz" ,np.array(images))
+np.savez("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations_base/10000_256_256_3_reference_batch.npz" ,np.array(images))
 
 
