@@ -128,6 +128,7 @@ class TrainLoop:
                     )
                 )
 
+        logger.log(self.model.parameters())
         dist_util.sync_params(self.model.parameters())
 
     def _load_ema_parameters(self, rate):

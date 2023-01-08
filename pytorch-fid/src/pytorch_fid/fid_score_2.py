@@ -41,6 +41,8 @@ import torchvision.transforms as TF
 from PIL import Image
 from scipy import linalg
 from torch.nn.functional import adaptive_avg_pool2d
+from pytorch_fid.densenet import densenet_features
+import torchxrayvision as xrv
 
 try:
     from tqdm import tqdm
@@ -59,7 +61,7 @@ parser.add_argument('--num-workers', type=int,
                           'Defaults to `min(8, num_cpus)`'))
 parser.add_argument('--device', type=str, default=None,
                     help='Device to use. Like cuda, cuda:0 or cpu')
-parser.add_argument('--dims', type=int, default=2048,
+parser.add_argument('--dims', type=int, default=1024,
                     choices=list(InceptionV3.BLOCK_INDEX_BY_DIM),
                     help=('Dimensionality of Inception features to use. '
                           'By default, uses pool3 features'))
@@ -73,22 +75,27 @@ IMAGE_EXTENSIONS = {'bmp', 'jpg', 'jpeg', 'pgm', 'png', 'ppm',
 
 class ImagePathDataset(torch.utils.data.Dataset):
     def __init__(self, arr_obj, transforms=None):
-        self.files = files
+        self.arr_obj = arr_obj
         self.transforms = transforms
+        self.array = arr_obj["arr_0"]
 
     def __len__(self):
-        return len(self.files)
+        # return self.arr_obj["arr_0"].shape[0]
+        return self.array.shape[0]
 
     def __getitem__(self, i):
         # path = self.files[i]
-        img = arr_obj["arr_0"][i]
+        # print("arr", self.arr_obj["arr_0"])
+        # img = self.arr_obj["arr_0"][i]
+        img = self.array[i]
+        img = xrv.datasets.normalize(img, 255)
         # img = Image.open(path).convert('RGB')
         if self.transforms is not None:
             img = self.transforms(img)
         return img
 
 
-def get_activations(arr_obj, model, batch_size=50, dims=2048, device='cpu',
+def get_activations(arr_obj, model, batch_size=50, dims=1024, device='cpu',
                     num_workers=1):
     """Calculates the activations of the pool_3 layer for all images.
 
@@ -109,12 +116,12 @@ def get_activations(arr_obj, model, batch_size=50, dims=2048, device='cpu',
        activations of the given tensor when feeding inception with the
        query tensor.
     """
-    model.eval()
+    # model.eval()
 
-    if batch_size > arr_obj.shape[0]:
+    if batch_size > arr_obj["arr_0"].shape[0]:
         print(('Warning: batch size is bigger than the data size. '
                'Setting batch size to data size'))
-        batch_size = arr_obj.shape[0]
+        batch_size = arr_obj["arr_0"].shape[0]
 
     dataset = ImagePathDataset(arr_obj, transforms=TF.ToTensor())
     dataloader = torch.utils.data.DataLoader(dataset,
@@ -124,22 +131,22 @@ def get_activations(arr_obj, model, batch_size=50, dims=2048, device='cpu',
                                              num_workers=num_workers)
 
     # pred_arr = np.empty((len(files), dims))
-    pred_arr = np.empty((arr_obj.shape[0], dims))
+    pred_arr = np.empty((arr_obj["arr_0"].shape[0], dims))
 
     start_idx = 0
 
     for batch in tqdm(dataloader):
-        batch = batch.to(device)
+        batch = batch
 
-        with torch.no_grad():
-            pred = model(batch)[0]
+        # with torch.no_grad():
+        pred = model(batch)
 
         # If model output is not scalar, apply global spatial average pooling.
         # This happens if you choose a dimensionality not equal 2048.
-        if pred.size(2) != 1 or pred.size(3) != 1:
-            pred = adaptive_avg_pool2d(pred, output_size=(1, 1))
+        # if pred.size(2) != 1 or pred.size(3) != 1:
+        #     pred = adaptive_avg_pool2d(pred, output_size=(1, 1))
 
-        pred = pred.squeeze(3).squeeze(2).cpu().numpy()
+        # pred = pred.squeeze(3).squeeze(2).cpu().numpy()
 
         pred_arr[start_idx:start_idx + pred.shape[0]] = pred
 
@@ -205,7 +212,7 @@ def calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
             + np.trace(sigma2) - 2 * tr_covmean)
 
 
-def calculate_activation_statistics(arr_obj, model, batch_size=50, dims=2048,
+def calculate_activation_statistics(arr_obj, model, batch_size=50, dims=1024,
                                     device='cpu', num_workers=1):
     """Calculation of the statistics used by the FID.
     Params:
@@ -256,14 +263,18 @@ def calculate_fid_given_paths(paths, batch_size, device, dims, num_workers=1):
         if not os.path.exists(p):
             raise RuntimeError('Invalid path: %s' % p)
 
-    block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[dims]
+    # block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[dims]
 
-    model = InceptionV3([block_idx]).to(device)
+    # model = InceptionV3([block_idx]).to(device)
+
+    model = densenet_features
 
     m1, s1 = compute_statistics_of_path(paths[0], model, batch_size,
                                         dims, device, num_workers)
+    print("mean1", m1)
     m2, s2 = compute_statistics_of_path(paths[1], model, batch_size,
                                         dims, device, num_workers)
+    print("mean2", m2)
     fid_value = calculate_frechet_distance(m1, s1, m2, s2)
 
     return fid_value

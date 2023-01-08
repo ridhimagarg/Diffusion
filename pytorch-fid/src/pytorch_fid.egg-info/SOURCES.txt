@@ -4,7 +4,9 @@ setup.cfg
 setup.py
 src/pytorch_fid/__init__.py
 src/pytorch_fid/__main__.py
+src/pytorch_fid/densenet.py
 src/pytorch_fid/fid_score.py
+src/pytorch_fid/fid_score_2.py
 src/pytorch_fid/inception.py
 src/pytorch_fid.egg-info/PKG-INFO
 src/pytorch_fid.egg-info/SOURCES.txt
