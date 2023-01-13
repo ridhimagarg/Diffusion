@@ -48,7 +48,9 @@ def load_data(
         # print(class_names)
         print(Counter(class_names))
         sorted_classes = {x: i for i, x in enumerate(sorted(set(class_names)))}
+        print("Sorted classes",sorted_classes)
         classes = [sorted_classes[x] for x in class_names]
+        # print("Classes", classes)
     dataset = ImageDataset(
         image_size,
         all_files,
@@ -121,6 +123,7 @@ class ImageDataset(Dataset):
         arr = arr.astype(np.float32) / 127.5 - 1
 
         out_dict = {}
+        # print("Local classes", self.local_classes[idx])
         if self.local_classes is not None:
             out_dict["y"] = np.array(self.local_classes[idx], dtype=np.int64)
         return np.transpose(arr, [2, 0, 1]), out_dict
