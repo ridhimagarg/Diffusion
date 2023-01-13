@@ -47,6 +47,9 @@ datapath = os.path.join(thispath, "data")
 
 datapath1 = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert-v1.0-small"
 
+## added on 12.01.2023
+chexpert_db = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/"
+
 # this is for caching small things for speed
 _cache_dict = {}
 
@@ -896,7 +899,9 @@ class CheX_Dataset(Dataset):
         self.csv.loc[(self.csv["view"] == "Frontal"), "view"] = self.csv["AP/PA"]  # If Frontal change with the corresponding value in the AP/PA column otherwise remains Lateral
         self.csv["view"] = self.csv["view"].replace({'Lateral': "L"})  # Rename Lateral with L
 
-        self.limit_to_selected_views(views)
+        # print("CSV", self.csv)
+
+        # self.limit_to_selected_views(views)
 
         if unique_patients:
             self.csv["PatientID"] = self.csv["Path"].str.extract(pat=r'(patient\d+)')
@@ -926,15 +931,25 @@ class CheX_Dataset(Dataset):
         # offset_day_int
 
         # patientid
+        # print("csv", self.csv)
         if 'train' in csvpath:
             patientid = self.csv.Path.str.split("train/", expand=True)[1]
         elif 'valid' in csvpath:
             patientid = self.csv.Path.str.split("valid/", expand=True)[1]
+        ## added on 13.01.2023
+        elif "test" in csvpath:
+            # print(self.csv)
+            # print(self.csv.Path.str.split("attempt1/", expand=True))
+            patientid = self.csv.Path.str.split("attempt3/", expand=True)[1]
         else:
             raise NotImplemented
 
-        patientid = patientid.str.split("/study", expand=True)[0]
+        if "test" not in csvpath:
+            patientid = patientid.str.split("/study", expand=True)[0]
         patientid = patientid.str.replace("patient", "")
+
+        if "test" in csvpath:
+            patientid = patientid.str.replace("_", "")
 
         # patientid
         self.csv["patientid"] = patientid
@@ -959,9 +974,14 @@ class CheX_Dataset(Dataset):
         sample["lab"] = self.labels[idx]
 
         imgid = self.csv['Path'].iloc[idx]
-        imgid = imgid.replace("CheXpert-v1.0-small/", "")
-        img_path = os.path.join(self.imgpath, imgid)
+        ## changed on 12.01.2023
+        # imgid = imgid.replace("CheXpert-v1.0-small/", "")
+        # img_path = os.path.join(self.imgpath, imgid)
+
+        img_path = os.path.join(chexpert_db, imgid)
         img = imread(img_path)
+
+        # print("Label", sample["lab"])
 
         sample["img"] = normalize(img, maxval=255, reshape=True)
 

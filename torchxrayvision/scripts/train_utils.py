@@ -154,6 +154,7 @@ def train(model, dataset, cfg):
                                      criterion=criterion)[0]
 
         if np.mean(auc_valid) > best_metric:
+            print(f"Epoch at which best auc {epoch}")
             best_metric = np.mean(auc_valid)
             weights_for_best_validauc = model.state_dict()
             torch.save(model, join(cfg.output_dir, f'{dataset_name}-best.pt'))
@@ -214,6 +215,7 @@ def train_epoch(cfg, epoch, model, device, train_loader, optimizer, criterion, l
             mask = ~torch.isnan(task_target)
             task_output = task_output[mask]
             task_target = task_target[mask]
+            print(f"Predicted {task_output} and Target {task_target}")
             if len(task_target) > 0:
                 task_loss = criterion(task_output.float(), task_target.float())
                 if cfg.taskweights:
@@ -253,6 +255,16 @@ def train_epoch(cfg, epoch, model, device, train_loader, optimizer, criterion, l
     return np.mean(avg_loss)
 
 def valid_test_epoch(name, epoch, model, device, data_loader, criterion, limit=None):
+    print("Validation model", model.__class__.__name__)
+    print("Model", model)
+
+    # for param in model.parameters():
+    #     print(param)
+    #     break
+
+    # for name, layer in model.named_modules():
+    #     print(name, layer)
+
     model.eval()
 
     avg_loss = []
@@ -273,7 +285,7 @@ def valid_test_epoch(name, epoch, model, device, data_loader, criterion, limit=N
             images = samples["img"].to(device)
             targets = samples["lab"].to(device)
 
-            # print("targets", targets)
+            # print("targets", targets.shape)
 
             outputs = model(images)
             
@@ -284,6 +296,9 @@ def valid_test_epoch(name, epoch, model, device, data_loader, criterion, limit=N
                 mask = ~torch.isnan(task_target)
                 task_output = task_output[mask]
                 task_target = task_target[mask]
+                # print(f"Predicted {task_output} and Target {task_target}")
+
+                task_target = 1 - task_target
                 if len(task_target) > 0:
                     loss += criterion(task_output.double(), task_target.double())
                 
@@ -298,12 +313,17 @@ def valid_test_epoch(name, epoch, model, device, data_loader, criterion, limit=N
         for task in range(len(task_targets)):
             task_outputs[task] = np.concatenate(task_outputs[task])
             task_targets[task] = np.concatenate(task_targets[task])
-    
+
+        print("Final targets", task_targets[7])
+        print("Output targets", task_outputs[7])
+
         task_aucs = []
         for task in range(len(task_targets)):
             if len(np.unique(task_targets[task]))> 1:
-                task_auc = sklearn.metrics.roc_auc_score(task_targets[task], task_outputs[task])
-                #print(task, task_auc)
+                ## added on 13.01.2023
+                # task_targets[task] = 1- task_targets[task]
+                task_auc = sklearn.metrics.roc_auc_score((task_targets[task]), task_outputs[task])
+                print(f"task {task} auc is {task_auc}")
                 task_aucs.append(task_auc)
             else:
                 task_aucs.append(np.nan)

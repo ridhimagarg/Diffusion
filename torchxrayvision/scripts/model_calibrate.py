@@ -68,10 +68,18 @@ if "pc" in cfg.dataset:
         transform=transforms, data_aug=data_aug, unique_patients=False, views=["PA","AP"])
     datas.append(dataset)
     datas_names.append("pc")
+# if "chex" in cfg.dataset:
+#     dataset = xrv.datasets.CheX_Dataset(
+#         imgpath=cfg.dataset_dir + "/CheXpert-v1.0-small",
+#         csvpath=cfg.dataset_dir + "/CheXpert-v1.0-small/train.csv",
+#         transform=transforms, data_aug=data_aug, unique_patients=False)
+#     datas.append(dataset)
+#     datas_names.append("chex")
+## changed on 12.01.2023
 if "chex" in cfg.dataset:
     dataset = xrv.datasets.CheX_Dataset(
-        imgpath=cfg.dataset_dir + "/CheXpert-v1.0-small",
-        csvpath=cfg.dataset_dir + "/CheXpert-v1.0-small/train.csv",
+        imgpath=cfg.dataset_dir + "/CheXpert-fake/attempt3",
+        csvpath=cfg.dataset_dir + "/CheXpert-fake/attempt3/test.csv",
         transform=transforms, data_aug=data_aug, unique_patients=False)
     datas.append(dataset)
     datas_names.append("chex")
@@ -134,6 +142,10 @@ else:
 
 print("datas_names", datas_names)
 
+# for batch_idx, samples in enumerate(datas[0]):
+#     # print(samples)
+#     pass
+
 for d in datas:
     xrv.datasets.relabel_dataset(model.pathologies, d)
 
@@ -146,7 +158,9 @@ for i, dataset in enumerate(datas):
     if "patientid" not in dataset.csv:
         dataset.csv["patientid"] = ["{}-{}".format(dataset.__class__.__name__, i) for i in range(len(dataset))]
         
-    gss = sklearn.model_selection.GroupShuffleSplit(train_size=0.8,test_size=0.2, random_state=cfg.seed)
+    gss = sklearn.model_selection.GroupShuffleSplit(train_size=0.1,test_size=0.9, random_state=cfg.seed)
+
+    # print(dataset.csv.patientid)
     
     train_inds, test_inds = next(gss.split(X=range(len(dataset)), groups=dataset.csv.patientid))
     train_dataset = xrv.datasets.SubsetDataset(dataset, train_inds)
@@ -187,18 +201,18 @@ print("test_dataset",test_dataset)
 cfg.output_dir = "output/"
 cfg.shuffle = False
 cfg.lr = 0.001
-cfg.num_epochs = 1
+cfg.num_epochs = 10
 cfg.taskweights = True
 cfg.label_concat_reg = False
 cfg.featurereg = False
 cfg.weightreg = False
-model.op_threshs = None # prevent pre-trained model calibration
-model.classifier = torch.nn.Linear(1024,1) # reinitialize classifier
+# model.op_threshs = None # prevent pre-trained model calibration
+# model.classifier = torch.nn.Linear(1024,1) # reinitialize classifier
 
 # optimizer = torch.optim.Adam(model.classifier.parameters()) # only train classifier
-train_utils.train(model, train_dataset, cfg)
+# train_utils.train(model, train_dataset, cfg)
 
-model = torch.load("output/chex-densenet-best.pt")
+# model = torch.load("output/chex-densenet-best.pt")
 
 
 test_loader = torch.utils.data.DataLoader(test_dataset,
