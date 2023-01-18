@@ -18,6 +18,8 @@ from guided_diffusion.script_util import (
 from guided_diffusion.train_util import TrainLoop
 from guided_diffusion.gpu_util import set_gpu_use
 
+from torchsummary import summary
+
 set_gpu_use(0)
 
 
@@ -31,6 +33,7 @@ def main():
     model, diffusion = create_model_and_diffusion(
         **args_to_dict(args, model_and_diffusion_defaults().keys())
     )
+    # print("Defined model", summary(model, input_size=(3,256,256)))
     model.to(dist_util.dev())
     schedule_sampler = create_named_schedule_sampler(args.schedule_sampler, diffusion)
 

@@ -1,7 +1,7 @@
-AnoDDPM/data
-AnoDDPM/diffusion-training-images
-AnoDDPM/diffusion-videos
-AnoDDPM/model
+extras/AnoDDPM/data
+extras/AnoDDPM/diffusion-training-images
+extras/AnoDDPM/diffusion-videos
+extras/AnoDDPM/model
 
 
 diffusion_venv/
@@ -17,11 +17,11 @@ guided-diffusion/visualization
 guided-diffusion-2/dataset
 guided-diffusion-2/results
 
-improved-diffusion/datasets
-improved-diffusion/mpi4py-3.1.3
-improved-diffusion/mpi4py-3.1.3.tar.gz
+extras/improved-diffusion/datasets
+extras/improved-diffusion/mpi4py-3.1.3
+extras/improved-diffusion/mpi4py-3.1.3.tar.gz
 
 results/
 train.csv
 
-torchxrayvision/scripts/output/
+extras/torchxrayvision/scripts/output/
