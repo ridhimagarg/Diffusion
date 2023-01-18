@@ -41,7 +41,7 @@ import torchvision.transforms as TF
 from PIL import Image
 from scipy import linalg
 from torch.nn.functional import adaptive_avg_pool2d
-from pytorch_fid.densenet import densenet_features
+from densenet import densenet_features
 import torchxrayvision as xrv
 from guided_diffusion import logger
 import datetime
