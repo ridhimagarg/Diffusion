@@ -122,10 +122,18 @@ class TrainLoop:
             self.resume_step = parse_resume_step_from_filename(resume_checkpoint)
             if dist.get_rank() == 0:
                 logger.log(f"loading model from checkpoint: {resume_checkpoint}...")
-                self.model.load_state_dict(
-                    dist_util.load_state_dict(
+                model1 = dist_util.load_state_dict(
                         resume_checkpoint, map_location=dist_util.dev()
                     )
+                # print("Model1", model1)
+                print("modell...", self.model.label_emb)
+                # model1["label_emb.weight"] = self.model.label_emb
+                # print(model1["label_emb.weight"])
+                model1.pop("label_emb.weight")
+                model1.label_emb = self.model.label_emb
+                # print(model1[])
+                self.model.load_state_dict(
+                    model1, strict=False
                 )
 
         logger.log(self.model.parameters())

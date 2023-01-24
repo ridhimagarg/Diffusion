@@ -479,7 +479,7 @@ class UNetModel(nn.Module):
 
         ch = input_ch = int(channel_mult[0] * model_channels)  ## changed(uncommented) back on 31.12.2022 for finetuning try
         self.input_blocks = nn.ModuleList(
-            [TimestepEmbedSequential(conv_nd(dims, in_channels, model_channels, 3, padding=1))] ## changed here. on 01.12.2022
+            [TimestepEmbedSequential(conv_nd(dims, in_channels, ch, 3, padding=1))] ## changed here. on 01.12.2022 # changed back on 21.01.2023 for finetuning
         )
         self._feature_size = ch ## model_channels ## changed here. on 01.12.2022 ##  ## changed back on 31.12.2022
         input_block_chans = [ch] ##[model_channels] ## changed here. on 01.12.2022  ## changed back on 31.12.2022
