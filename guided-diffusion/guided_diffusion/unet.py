@@ -477,13 +477,19 @@ class UNetModel(nn.Module):
         if self.num_classes is not None:
             self.label_emb = nn.Embedding(num_classes, time_embed_dim)
 
-        ch = input_ch = int(channel_mult[0] * model_channels)  ## changed(uncommented) back on 31.12.2022 for finetuning try
+        # ch = input_ch = int(channel_mult[0] * model_channels)  ## changed(uncommented) back on 31.12.2022 for finetuning try
+        # self.input_blocks = nn.ModuleList(
+        #     [TimestepEmbedSequential(conv_nd(dims, in_channels, ch, 3, padding=1))] ## changed here. on 01.12.2022 # changed back on 21.01.2023 for finetuning
+        # ) ## for finetuning
+
         self.input_blocks = nn.ModuleList(
-            [TimestepEmbedSequential(conv_nd(dims, in_channels, ch, 3, padding=1))] ## changed here. on 01.12.2022 # changed back on 21.01.2023 for finetuning
+            [TimestepEmbedSequential(conv_nd(dims, in_channels, model_channels, 3, padding=1))] ## changed here. on 01.12.2022 # changed back on 21.01.2023 for finetuning
         )
-        self._feature_size = ch ## model_channels ## changed here. on 01.12.2022 ##  ## changed back on 31.12.2022
-        input_block_chans = [ch] ##[model_channels] ## changed here. on 01.12.2022  ## changed back on 31.12.2022
-        # ch = model_channels ## added here. on 01.12.2022
+        # self._feature_size = ch ## model_channels ## changed here. on 01.12.2022 ##  ## changed back on 31.12.2022 ## for finetuning
+        self._feature_size = model_channels
+        # input_block_chans = [ch] ##[model_channels] ## changed here. on 01.12.2022  ## changed back on 31.12.2022 ## for finetuning
+        input_block_chans = [model_channels]
+        ch = model_channels ## added here. on 01.12.2022
         ds = 1
         for level, mult in enumerate(channel_mult):
             for _ in range(num_res_blocks):
@@ -492,13 +498,15 @@ class UNetModel(nn.Module):
                         ch,
                         time_embed_dim,
                         dropout,
-                        out_channels= int(mult * model_channels), ## changed here. on 01.12.2022  ## changed back on 31.12.2022
+                        # out_channels= int(mult * model_channels), ## changed here. on 01.12.2022  ## changed back on 31.12.2022 ## for finetuning
+                        out_channels = mult * model_channels, ## 
                         dims=dims,
                         use_checkpoint=use_checkpoint,
                         use_scale_shift_norm=use_scale_shift_norm,
                     )
                 ]
-                ch = int(mult * model_channels) ## changed here. on 01.12.2022
+                # ch = int(mult * model_channels) ## changed here. on 01.12.2022 ## for finetuning
+                ch = mult * model_channels 
                 if ds in attention_resolutions:
                     layers.append(
                         AttentionBlock(
@@ -573,13 +581,15 @@ class UNetModel(nn.Module):
                         ch + ich,
                         time_embed_dim,
                         dropout,
-                        out_channels= int(model_channels * mult), ## changed here. on 01.12.2022
+                        # out_channels= int(model_channels * mult), ## changed here. on 01.12.2022 ## for finetuning
+                        out_channels = model_channels* mult,
                         dims=dims,
                         use_checkpoint=use_checkpoint,
                         use_scale_shift_norm=use_scale_shift_norm,
                     )
                 ]
-                ch = int(model_channels * mult) ## changed here. on 01.12.2022
+                # ch = int(model_channels * mult) ## changed here. on 01.12.2022 ## for finetuning
+                ch = model_channels * mult
                 if ds in attention_resolutions:
                     layers.append(
                         AttentionBlock(
@@ -613,7 +623,8 @@ class UNetModel(nn.Module):
         self.out = nn.Sequential(
             normalization(ch),
             nn.SiLU(),
-            zero_module(conv_nd(dims, input_ch, out_channels, 3, padding=1)), ## changed back on 31.12.2022
+            # zero_module(conv_nd(dims, input_ch, out_channels, 3, padding=1)), ## changed back on 31.12.2022 ## for finetuning
+            zero_module(conv_nd(dims, model_channels, out_channels, 3, padding=1))
         )
         print("model channels", model_channels)
         print("out channels", out_channels)

@@ -53,3 +53,8 @@ python evaluations/evaluator.py /mount/arbeitsdaten/mudcat/Resources/Multimedia-
 
 
 /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations_base/500_256_256_3_reference_batch.npz /mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-11-27-12-34-15-806086_100samples1attempt2classes/samples_100x256x256x3.npz
+
+
+
+=====================
+streamlit run streamlitapp.py --server.port 5001 --server.enableCORS false --browser.serverAddress localhost

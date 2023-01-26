@@ -538,16 +538,19 @@ class GaussianDiffusion:
                 )
                 yield out
                 img = out["sample"]
-                img_viz = ((img + 1) * 127.5).clamp(0, 255).to(th.uint8)
-                img_viz = img_viz.permute(0, 2, 3, 1)
-                # print(img_viz.cpu().detach().numpy()[0].shape)
-                im = plt.imshow(img_viz.cpu().detach().numpy()[0])
-                ims.append([im])
-                
-        ani = animation.ArtistAnimation(fig, ims, interval=50, blit=True,
-                repeat_delay=1000)
 
-        ani.save("visualization/image_viz.mp4")
+
+
+        #         img_viz = ((img + 1) * 127.5).clamp(0, 255).to(th.uint8)
+        #         img_viz = img_viz.permute(0, 2, 3, 1)
+        #         # print(img_viz.cpu().detach().numpy()[0].shape)
+        #         im = plt.imshow(img_viz.cpu().detach().numpy()[0])
+        #         ims.append([im])
+                
+        # ani = animation.ArtistAnimation(fig, ims, interval=50, blit=True,
+        #         repeat_delay=1000)
+
+        # ani.save("visualization/image_viz.mp4")
 
     def ddim_sample(
         self,
