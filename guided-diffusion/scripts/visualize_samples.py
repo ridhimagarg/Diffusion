@@ -22,18 +22,18 @@ print(array["arr_1"][10:20])
 
 # print(samples[0].shape)
 
-# os.mkdir(os.path.join(path, foldername))
+os.mkdir(os.path.join(path, foldername))
 
-# for img_idx in range(samples.shape[0]):
+for img_idx in range(samples.shape[0]):
 
-#     print("here")
+    print("here")
 
-#     filename = "sample_" + str(img_idx) + ".png"
-#     # cv2.imshow("test", samples[img_idx])
-#     # cv2.waitKey(0) 
+    filename = "sample_" + str(img_idx) + ".png"
+    # cv2.imshow("test", samples[img_idx])
+    # cv2.waitKey(0) 
   
-#     # #closing all open windows 
-#     # cv2.destroyAllWindows() 
-#     print(os.path.join(path, foldername, filename))
+    # #closing all open windows 
+    # cv2.destroyAllWindows() 
+    print(os.path.join(path, foldername, filename))
     
-#     cv2.imwrite(os.path.join(path, foldername, filename), samples[img_idx])
+    cv2.imwrite(os.path.join(path, foldername, filename), samples[img_idx])

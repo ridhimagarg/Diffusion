@@ -26,8 +26,13 @@ from guided_diffusion.gpu_util import set_gpu_use
 
 set_gpu_use(2)
 
-def main():
+def main(no_of_images= None):
     args = create_argparser().parse_args()
+
+    if no_of_images:
+        args.num_samples = no_of_images
+
+    print("image size", args.image_size)
 
     dist_util.setup_dist()
     logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
@@ -106,6 +111,7 @@ def main():
         all_labels.extend([labels.cpu().numpy() for labels in gathered_labels])
         logger.log(f"All labels {all_labels}")
         logger.log(f"created {len(all_images) * args.batch_size} samples")
+        logger.log("All images shape:", len(all_images))
 
     arr = np.concatenate(all_images, axis=0)
     arr = arr[: args.num_samples]
@@ -120,6 +126,7 @@ def main():
 
     dist.barrier()
     logger.log("sampling complete")
+    return out_path
 
 
 def create_argparser():
@@ -132,8 +139,13 @@ def create_argparser():
         classifier_path="",
         classifier_scale=1.0,
     )
+    # defaults = dict(batch_size=2, num_samples=5, timestep_respacing=250, attention_resolutions="16,8", classifier_attention_resolutions="32,16,8", class_cond=True, image_size=256, num_channels=128, num_res_blocks=3, classifier_depth=2, classifier_width=128, classifier_pool='attention', classifier_resblock_updown=True,
+    # classifier_use_scale_shift_norm = True, classifier_path="/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiertrain/openai-2022-12-02-15-41-42-283455-2classes_3attempt/model085000.pt", model_path='/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/diffusiontrain/openai-2022-12-02-15-44-17-401632-2classes_3attempt/model090000.pt')
+    # defaults = dict(clip_denoised=True, num_samples=5000, batch_size=8, use_ddim=False, model_path='/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/diffusiontrain/openai-2022-12-02-15-44-17-401632-2classes_3attempt/model090000.pt', classifier_path='/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiertrain/openai-2022-12-02-15-41-42-283455-2classes_3attempt/model085000.pt', classifier_scale=10.0, image_size=256, num_channels=128, num_res_blocks=3, num_heads=4, num_heads_upsample=-1, num_head_channels=-1, attention_resolutions='16,8', channel_mult='', dropout=0.0, class_cond=True, use_checkpoint=False, use_scale_shift_norm=True, resblock_updown=False, use_fp16=False, use_new_attention_order=False, learn_sigma=False, diffusion_steps=4000, noise_schedule='linear', timestep_respacing='250', use_kl=False, predict_xstart=False, rescale_timesteps=False, rescale_learned_sigmas=False, classifier_use_fp16=False, classifier_width=128, classifier_depth=2, classifier_attention_resolutions='32,16,8', classifier_use_scale_shift_norm=True, classifier_resblock_updown=True, classifier_pool='attention')
     defaults.update(model_and_diffusion_defaults())
     defaults.update(classifier_defaults())
+    defaults = dict(clip_denoised=True, num_samples=3, batch_size=3, use_ddim=False, model_path='/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/diffusiontrain/openai-2022-12-02-15-44-17-401632-2classes_3attempt/model090000.pt', classifier_path='/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiertrain/openai-2022-12-02-15-41-42-283455-2classes_3attempt/model085000.pt', classifier_scale=10.0, image_size=256, num_channels=128, num_res_blocks=3, num_heads=4, num_heads_upsample=-1, num_head_channels=-1, attention_resolutions='16,8', channel_mult='', dropout=0.0, class_cond=True, use_checkpoint=False, use_scale_shift_norm=True, resblock_updown=False, use_fp16=False, use_new_attention_order=False, learn_sigma=False, diffusion_steps=4000, noise_schedule='linear', timestep_respacing='250', use_kl=False, predict_xstart=False, rescale_timesteps=False, rescale_learned_sigmas=False, classifier_use_fp16=False, classifier_width=128, classifier_depth=2, classifier_attention_resolutions='32,16,8', classifier_use_scale_shift_norm=True, classifier_resblock_updown=True, classifier_pool='attention')
+    print("Defaults", defaults)
     parser = argparse.ArgumentParser()
     add_dict_to_argparser(parser, defaults)
     return parser
