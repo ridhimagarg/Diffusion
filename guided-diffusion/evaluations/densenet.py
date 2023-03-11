@@ -13,7 +13,7 @@ model = xrv.models.DenseNet(weights="densenet121-res224-all")
 # print(np.mean(model.features2(torch.from_numpy(arr).float()).detach().numpy(), axis=0).shape)
 
 # print(np.cov(model.features2(torch.from_numpy(arr).float()).detach().numpy(), rowvar=False).shape)
-
+    
 def densenet_features(input):
 
     # print("input", input.shape)

@@ -12,7 +12,6 @@ import torch.distributed as dist
 import torch.nn.functional as F
 from torch.nn.parallel.distributed import DistributedDataParallel as DDP
 from torch.optim import AdamW
-
 from guided_diffusion import dist_util, logger
 from guided_diffusion.fp16_util import MixedPrecisionTrainer
 from guided_diffusion.image_datasets import load_data
@@ -26,7 +25,7 @@ from guided_diffusion.script_util import (
 from guided_diffusion.train_util import parse_resume_step_from_filename, log_loss_dict
 from guided_diffusion.gpu_util import set_gpu_use
 
-set_gpu_use(0)
+set_gpu_use(7)
 
 
 def main():
@@ -220,6 +219,7 @@ def create_argparser():
         log_interval=10,
         eval_interval=5,
         save_interval=10000,
+        num_classes=None,
     )
     defaults.update(classifier_and_diffusion_defaults())
     parser = argparse.ArgumentParser()

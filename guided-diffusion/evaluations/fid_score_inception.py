@@ -34,7 +34,7 @@ def main():
 
     print(args)
     logger.configure(dir=os.path.join(
-        "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations", args.ref_batch.split("/")[-1] + args.sample_batch.split("/")[-1] +
+        "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations", args.ref_batch.split("/")[-2] + args.ref_batch.split("/")[-1] + args.sample_batch.split("/")[-2] + args.sample_batch.split("/")[-1] +
         datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
 
     logger.log(f"Arguments passe {args}")
@@ -90,9 +90,11 @@ class FIDStatistics:
         mu2 = np.atleast_1d(mu2)
 
         logger.log("mean of 1st batch", mu1)
+        logger.log("shape of mean", mu1.shape)
         logger.log("mean of 2nd batch", mu2)
 
         sigma1 = np.atleast_2d(sigma1)
+        logger.log("shape of variance", sigma1.shape)
         sigma2 = np.atleast_2d(sigma2)
 
         logger.log("variance of 1st batch", sigma1)

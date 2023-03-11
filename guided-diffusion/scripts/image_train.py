@@ -14,13 +14,14 @@ from guided_diffusion.script_util import (
     create_model_and_diffusion,
     args_to_dict,
     add_dict_to_argparser,
+    NUM_CLASSES
 )
 from guided_diffusion.train_util import TrainLoop
 from guided_diffusion.gpu_util import set_gpu_use
 
 from torchsummary import summary
 
-set_gpu_use(0)
+set_gpu_use(1)
 
 
 def main():
@@ -29,6 +30,8 @@ def main():
     dist_util.setup_dist()
     if args.resume_checkpoint:
         logger.configure(dir = os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/diffusiontrainfinetune", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
+    elif NUM_CLASSES > 2:
+        logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/diffusiontrainmulticlass", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
     else:
         logger.configure(dir= os.path.join("/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/diffusiontrain", datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
 
@@ -86,6 +89,7 @@ def create_argparser():
         resume_checkpoint="",
         use_fp16=False,
         fp16_scale_growth=1e-3,
+        num_classes=None,
     )
     defaults.update(model_and_diffusion_defaults())
     parser = argparse.ArgumentParser()

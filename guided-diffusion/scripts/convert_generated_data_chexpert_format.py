@@ -7,10 +7,17 @@ import pandas as pd
 orig_csv_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert-v1.0-small/train.csv"
 # array_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-12-14-23-12-24-295650_5000samples3attemptclassifierscale10timespacedim1000/samples_5000x256x256x3.npz"
 # array_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-12-05-17-46-00-565034_5000samples3attempt10classifierscalelatermodels/samples_5000x256x256x3.npz"
-array_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-12-17-22-12-27-510091_5000samples5attemptdiffusiononlyclassifierscale10timestemp250/samples_5000x256x256x3.npz"
+# array_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-12-17-22-12-27-510091_5000samples5attemptdiffusiononlyclassifierscale10timestemp250/samples_5000x256x256x3.npz"
+# save_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert-fake/attempt3"
 
 
-save_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert-fake/attempt3"
+# array_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2023-02-03-22-25-29-146934_diffusion_finetune_36k_timestep250/samples_5000x256x256x3.npz"
+# save_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert-fake/attempt4"  
+
+array_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/classifiersample/openai-2022-12-05-17-46-00-565034_5000samples3attempt10classifierscalelatermodels/samples_5000x256x256x3.npz"
+save_path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpert-fake/attempt5"
+
+
 array = np.load(array_path)
 
 # print(save_path.rsplit("/", 2)[0])
@@ -31,6 +38,7 @@ for index, arr in enumerate(array["arr_0"]):
     if not os.path.exists(os.path.join(save_path, "patient_" + str(index))):
         os.mkdir(os.path.join(save_path, "patient_" + str(index)))
         cv2.imwrite(os.path.join(save_path, "patient_" + str(index), "image.jpg"), arr)
+    print("hello..")
 
     # print(os.path.join(save_path, "patient_" + str(index), "image.jpg"))
 
@@ -41,7 +49,7 @@ for index, arr in enumerate(array["arr_0"]):
        "Pneumothorax" : np.nan, "Pleural Effusion" : array["arr_1"][index], 'Pleural Other': np.nan, 'Fracture': np.nan,'Support Devices': np.nan}])
     new_df = pd.concat([new_df, new_row])
 
-print(new_df.loc[0,"Path"])
+print(new_df.loc[0,"Path"]) 
 
 print(new_df)
 

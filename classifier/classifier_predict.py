@@ -79,8 +79,8 @@ if "pc" in cfg.dataset:
 ## changed on 12.01.2023
 if "chex" in cfg.dataset:
     dataset = xrv.datasets.CheX_Dataset(
-        imgpath=cfg.dataset_dir + "/CheXpert-fake/attempt2",
-        csvpath=cfg.dataset_dir + "/CheXpert-fake/attempt2/test.csv",
+        imgpath=cfg.dataset_dir + "/CheXpert-fake/attempt3",
+        csvpath=cfg.dataset_dir + "/CheXpert-fake/attempt3/test.csv",
         transform=transforms, data_aug=data_aug, unique_patients=False)
     datas.append(dataset)
     datas_names.append("chex")

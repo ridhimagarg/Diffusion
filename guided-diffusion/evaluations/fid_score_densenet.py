@@ -286,7 +286,7 @@ def main():
     args = parser.parse_args()
 
     logger.configure(dir=os.path.join(
-        "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations", args.path[0].split("/")[-1] + args.path[1].split("/")[-1] +
+        "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations", args.path[0].split("/")[-2] + args.path[0].split("/")[-1] + args.path[1].split("/")[-2] + args.path[1].split("/")[-1] +
         datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
 
     logger.log(f"Arguments passe from densenet fid {args}")

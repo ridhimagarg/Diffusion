@@ -10,7 +10,7 @@ import numpy as np
 import torch
 import torchvision
 import sklearn.metrics
-from sklearn.metrics import roc_auc_score, accuracy_score
+from sklearn.metrics import roc_auc_score, accuracy_score, precision_recall_curve
 import sklearn, sklearn.model_selection
 import torchxrayvision as xrv
 
@@ -323,6 +323,11 @@ def valid_test_epoch(name, epoch, model, device, data_loader, criterion, limit=N
                 ## added on 13.01.2023
                 # task_targets[task] = 1- task_targets[task]
                 print("Confusion matrix", sklearn.metrics.confusion_matrix((task_targets[task]), (task_outputs[task]>0.5)))
+                precision, recall, thresholds = precision_recall_curve((task_targets[task]), (task_outputs[task]))
+                print("precision", precision[2234])
+                print("recall", recall[2234])
+                print("threshold", len(thresholds))
+                print("threshold..", np.where(thresholds>=0.5))
                 task_auc = sklearn.metrics.roc_auc_score((task_targets[task]), task_outputs[task])
                 print(f"task {task} auc is {task_auc}")
                 task_aucs.append(task_auc)

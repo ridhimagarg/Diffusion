@@ -33,9 +33,10 @@ def main():
     args = parser.parse_args()
 
     print(args)
-    logger.configure(dir=os.path.join(
-        "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations", args.ref_batch.split("/")[-1] + args.sample_batch.split("/")[-1] +
-        datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f")))
+    path = os.path.join(
+        "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations", args.ref_batch.split("/")[-2] + args.ref_batch.split("/")[-1] + args.sample_batch.split("/")[-2] + args.sample_batch.split("/")[-1] +
+        datetime.datetime.now().strftime("openai-%Y-%m-%d-%H-%M-%S-%f"))
+    logger.configure(dir=path)
 
     logger.log(f"Arguments passe {args}")
 
@@ -53,7 +54,7 @@ def main():
     np.load(args.ref_batch)
 
     print("computing reference batch activations...")
-    ref_acts = evaluator.read_activations(args.ref_batch)
+    ref_acts = evaluator.read_activations(args.ref_batch, "ref", path)
     print("computing/reading reference batch statistics...")
     ref_stats = []
     ref_stats_spatial = []
@@ -62,7 +63,7 @@ def main():
         ref_stats_spatial.append(evaluator.read_statistics(args.ref_batch, ref_act)[1])
 
     print("computing sample batch activations...")
-    sample_acts = evaluator.read_activations(args.sample_batch)
+    sample_acts = evaluator.read_activations(args.sample_batch, "sample", path)
     print("computing/reading sample batch statistics...")
     sample_stats = []
     sample_stats_spatial = []
@@ -174,7 +175,7 @@ class Evaluator:
         
     #     classes = np.unique(labels)
 
-    def read_activations(self, npz_path: str) -> Tuple[np.ndarray, np.ndarray]:
+    def read_activations(self, npz_path: str, type, path) -> Tuple[np.ndarray, np.ndarray]:
         
 
         with open_npz_array(npz_path, "arr_1") as reader:
@@ -183,6 +184,7 @@ class Evaluator:
 
             index  = 0
             for batch in array_labels:
+                print(batch.shape)
                 data_labels[index:index+batch.shape[0]] = batch
                 index = index +batch.shape[0]
 
@@ -202,6 +204,7 @@ class Evaluator:
         # create_class_wise_batches(data_labels, data_images)
         # print("labels", data_labels)
         # ======================================
+        print("data labels", data_labels)
         classes, counts = np.unique(data_labels, return_counts=True)
 
         final_images = {}
@@ -223,7 +226,7 @@ class Evaluator:
         #==============================================
         activations = []
         for class_, images in final_images.items():
-            npz_path = "class_"+ str(class_)+".npz"
+            npz_path = os.path.join(path , "class_"+ str(class_) + str(type) +".npz")
             np.savez(npz_path, images, "arr_0")
 
             with open_npz_array(npz_path, "arr_0") as reader:

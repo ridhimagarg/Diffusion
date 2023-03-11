@@ -940,7 +940,7 @@ class CheX_Dataset(Dataset):
         elif "test" in csvpath:
             # print(self.csv)
             # print(self.csv.Path.str.split("attempt1/", expand=True))
-            patientid = self.csv.Path.str.split("attempt2/", expand=True)[1]
+            patientid = self.csv.Path.str.split("attempt3/", expand=True)[1]
         else:
             raise NotImplemented
 
