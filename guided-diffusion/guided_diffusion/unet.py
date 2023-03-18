@@ -445,7 +445,7 @@ class UNetModel(nn.Module):
         use_scale_shift_norm=False,
         resblock_updown=False,
         use_new_attention_order=False,
-        finetune_flag = True
+        finetune_flag = False
     ):
         super().__init__()
 
@@ -747,7 +747,7 @@ class EncoderUNetModel(nn.Module):
         resblock_updown=False,
         use_new_attention_order=False,
         pool="adaptive",
-        finetune_flag=True
+        finetune_flag=False
     ):
         super().__init__()
 

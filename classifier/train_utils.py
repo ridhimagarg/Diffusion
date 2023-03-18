@@ -102,7 +102,7 @@ def train(model, dataset, cfg):
     # print("Model", torchvision.models.get_model(model))
     ## added here on 08.01.2023
     model.op_threshs = None # prevent pre-trained model calibration
-    model.classifier = torch.nn.Linear(1024,18) # reinitialize classifier
+    model.classifier = torch.nn.Linear(1024,1) # reinitialize classifier
 
     # Optimizer
     optim = torch.optim.Adam(model.classifier.parameters(), lr=cfg.lr, weight_decay=1e-5, amsgrad=True) ## changed here
@@ -146,31 +146,32 @@ def train(model, dataset, cfg):
                                train_loader=train_loader,
                                criterion=criterion)
         
-        auc_valid = valid_test_epoch(name='Valid',
+        avg_loss, auc_valid = valid_test_epoch_single_task(name='Valid',
                                      epoch=epoch,
                                      model=model,
                                      device=device,
                                      data_loader=valid_loader,
-                                     criterion=criterion)[0]
+                                     criterion=criterion)
 
-        if np.mean(auc_valid) > best_metric:
-            print(f"Epoch at which best auc {epoch}")
-            best_metric = np.mean(auc_valid)
-            weights_for_best_validauc = model.state_dict()
-            torch.save(model, join(cfg.output_dir, f'{dataset_name}-best.pt'))
+        # if np.mean(auc_valid) > best_metric:
+        #     print(f"Epoch at which best auc {epoch}")
+        #     best_metric = np.mean(auc_valid)
+        #     weights_for_best_validauc = model.state_dict()
+        #     torch.save(model, join(cfg.output_dir, f'{dataset_name}-best.pt'))
             # only compute when we need to
 
         stat = {
             "epoch": epoch + 1,
             "trainloss": avg_loss,
-            "validauc": auc_valid,
-            'best_metric': best_metric
+            # "validauc": auc_valid,
+            # 'best_metric': best_metric
         }
 
         metrics.append(stat)
 
         with open(join(cfg.output_dir, f'{dataset_name}-metrics.pkl'), 'wb') as f:
             pickle.dump(metrics, f)
+
 
         torch.save(model, join(cfg.output_dir, f'{dataset_name}-e{epoch + 1}.pt'))
 
@@ -183,12 +184,12 @@ def train(model, dataset, cfg):
 def train_epoch(cfg, epoch, model, device, train_loader, optimizer, criterion, limit=None):
     model.train()
 
-    if cfg.taskweights:
-        weights = np.nansum(train_loader.dataset.labels, axis=0)
-        weights = weights.max() - weights + weights.mean()
-        weights = weights/weights.max()
-        weights = torch.from_numpy(weights).to(device).float()
-        print("task weights", weights)
+    # if cfg.taskweights:
+    #     weights = np.nansum(train_loader.dataset.labels, axis=0)
+    #     weights = weights.max() - weights + weights.mean()
+    #     weights = weights/weights.max()
+    #     weights = torch.from_numpy(weights).to(device).float()
+    #     print("task weights", weights)
     
     avg_loss = []
     t = tqdm(train_loader)
@@ -207,52 +208,103 @@ def train_epoch(cfg, epoch, model, device, train_loader, optimizer, criterion, l
         # print(targets.shape)
         # print(outputs.shape)
         
-        loss = torch.zeros(1).to(device).float()
-        for task in range(targets.shape[1]):
-            # print(task)
-            task_output = outputs[:,task]
-            task_target = targets[:,task]
-            mask = ~torch.isnan(task_target)
-            task_output = task_output[mask]
-            task_target = task_target[mask]
-            print(f"Predicted {task_output} and Target {task_target}")
-            if len(task_target) > 0:
-                task_loss = criterion(task_output.float(), task_target.float())
-                if cfg.taskweights:
-                    loss += weights[task]*task_loss
-                else:
-                    loss += task_loss
+        # loss = torch.zeros(1).to(device).float()
+        # print("Outputs", outputs[:,0])
+        # print("Targets",targets[:,7])
+        loss = criterion(outputs[:,0].float(), targets[:,7].float())
+        # for task in range(targets.shape[1]):
+        #     # print(task)
+        #     task_output = outputs[:,task]
+        #     task_target = targets[:,task]
+        #     mask = ~torch.isnan(task_target)
+        #     task_output = task_output[mask]
+        #     task_target = task_target[mask]
+        #     print(f"Predicted {task_output} and Target {task_target}")
+        #     if len(task_target) > 0:
+        #         task_loss = criterion(task_output.float(), task_target.float())
+        #         if cfg.taskweights:
+        #             loss += weights[task]*task_loss
+        #         else:
+        #             loss += task_loss
         
-        # here regularize the weight matrix when label_concat is used
-        if cfg.label_concat_reg:
-            if not cfg.label_concat:
-                raise Exception("cfg.label_concat must be true")
-            weight = model.classifier.weight
-            num_labels = len(xrv.datasets.default_pathologies)
-            num_datasets = weight.shape[0]//num_labels
-            weight_stacked = weight.reshape(num_datasets,num_labels,-1)
-            label_concat_reg_lambda = torch.tensor(0.1).to(device).float()
-            for task in range(num_labels):
-                dists = torch.pdist(weight_stacked[:,task], p=2).mean()
-                loss += label_concat_reg_lambda*dists
+        # # here regularize the weight matrix when label_concat is used
+        # if cfg.label_concat_reg:
+        #     if not cfg.label_concat:
+        #         raise Exception("cfg.label_concat must be true")
+        #     weight = model.classifier.weight
+        #     num_labels = len(xrv.datasets.default_pathologies)
+        #     num_datasets = weight.shape[0]//num_labels
+        #     weight_stacked = weight.reshape(num_datasets,num_labels,-1)
+        #     label_concat_reg_lambda = torch.tensor(0.1).to(device).float()
+        #     for task in range(num_labels):
+        #         dists = torch.pdist(weight_stacked[:,task], p=2).mean()
+        #         loss += label_concat_reg_lambda*dists
                 
-        loss = loss.sum()
+        # loss = loss.sum()
         
-        if cfg.featurereg:
-            feat = model.features(images)
-            loss += feat.abs().sum()
+        # if cfg.featurereg:
+        #     feat = model.features(images)
+        #     loss += feat.abs().sum()
             
-        if cfg.weightreg:
-            loss += model.classifier.weight.abs().sum()
+        # if cfg.weightreg:
+        #     loss += model.classifier.weight.abs().sum()
         
         loss.backward()
 
         avg_loss.append(loss.detach().cpu().numpy())
-        t.set_description(f'Epoch {epoch + 1} - Train - Loss = {np.mean(avg_loss):4.4f}')
-
+        # print("Loss", loss) 
+        # print("Average loss", avg_loss)
         optimizer.step()
-
+    t.set_description(f'Epoch {epoch + 1} - Train - Loss = {np.mean(avg_loss):4.4f}')
+    print(f'Epoch {epoch + 1} - Train - Loss = {np.mean(avg_loss):4.4f}')
     return np.mean(avg_loss)
+
+
+def valid_test_epoch_single_task(name, epoch, model, device, data_loader, criterion, limit=None):
+    
+    model.eval()
+    avg_loss = []
+    aucs = []
+    outputs_list = []
+    targets_list = []
+
+    with torch.no_grad():
+        t = tqdm(data_loader)
+        for batch_idx, samples in enumerate(t):
+
+            if limit and (batch_idx > limit):
+                print("breaking out")
+                break
+            
+            images = samples["img"].to(device)
+            targets = samples["lab"].to(device)
+            mask = ~torch.isnan(targets[:,7])
+            
+
+            # print("targets", targets.shape)
+
+            outputs = model(images)
+            outputs = outputs[:,0][mask]
+            targets = targets[:,7][mask]
+            
+
+            # print("Outputs", outputs.detach().cpu().numpy())
+            # print("Targets",targets.detach().cpu().numpy())
+            outputs_list.append(outputs.detach().cpu().numpy())
+            targets_list.append(targets.detach().cpu().numpy())
+            loss = criterion(outputs.float(), targets.float())
+            # auc = sklearn.metrics.roc_auc_score(targets[:,7].detach().cpu().numpy(), outputs[:,0].detach().cpu().numpy())
+            # aucs.append(auc)
+
+            avg_loss.append(loss.detach().cpu().numpy())
+            # print("Loss", loss) 
+        # print("Average loss", avg_loss)
+        print("Targets list", targets_list)
+        auc = sklearn.metrics.roc_auc_score(targets_list, outputs_list)
+        t.set_description(f'Epoch {epoch + 1} - {name} - Loss = {np.mean(avg_loss):4.4f}')
+        print(f'Epoch {epoch + 1} - {name} - Loss = {np.mean(avg_loss):4.4f}')
+        print(f'Epoch {epoch + 1} - {name} - AUC = {(auc):4.4f}')
+        return np.mean(avg_loss), auc
 
 def valid_test_epoch(name, epoch, model, device, data_loader, criterion, limit=None):
     print("Validation model", model.__class__.__name__)
@@ -284,6 +336,7 @@ def valid_test_epoch(name, epoch, model, device, data_loader, criterion, limit=N
             
             images = samples["img"].to(device)
             targets = samples["lab"].to(device)
+            
 
             # print("targets", targets.shape)
 
@@ -324,8 +377,8 @@ def valid_test_epoch(name, epoch, model, device, data_loader, criterion, limit=N
                 # task_targets[task] = 1- task_targets[task]
                 print("Confusion matrix", sklearn.metrics.confusion_matrix((task_targets[task]), (task_outputs[task]>0.5)))
                 precision, recall, thresholds = precision_recall_curve((task_targets[task]), (task_outputs[task]))
-                print("precision", precision[2234])
-                print("recall", recall[2234])
+                # print("precision", precision[2234])
+                # print("recall", recall[2234])
                 print("threshold", len(thresholds))
                 print("threshold..", np.where(thresholds>=0.5))
                 task_auc = sklearn.metrics.roc_auc_score((task_targets[task]), task_outputs[task])

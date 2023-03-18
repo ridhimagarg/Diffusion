@@ -933,7 +933,7 @@ class CheX_Dataset(Dataset):
         # patientid
         # print("csv", self.csv)
         if 'train' in csvpath:
-            patientid = self.csv.Path.str.split("train/", expand=True)[1]
+            patientid = self.csv.Path.str.split("/", expand=True)[2]
         elif 'valid' in csvpath:
             patientid = self.csv.Path.str.split("valid/", expand=True)[1]
         ## added on 13.01.2023
@@ -944,9 +944,9 @@ class CheX_Dataset(Dataset):
         else:
             raise NotImplemented
 
-        if "test" not in csvpath:
-            patientid = patientid.str.split("/study", expand=True)[0]
-        patientid = patientid.str.replace("patient", "")
+        # if "test" not in csvpath:
+        #     patientid = patientid.str.split("/study", expand=True)[0]
+        # patientid = patientid.str.replace("patient", "")
 
         if "test" in csvpath:
             patientid = patientid.str.replace("_", "")

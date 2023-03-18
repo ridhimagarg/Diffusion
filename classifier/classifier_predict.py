@@ -80,10 +80,14 @@ if "pc" in cfg.dataset:
 if "chex" in cfg.dataset:
     dataset = xrv.datasets.CheX_Dataset(
         imgpath=cfg.dataset_dir + "/CheXpert-fake/attempt3",
-        csvpath=cfg.dataset_dir + "/CheXpert-fake/attempt3/test.csv",
+        csvpath=cfg.dataset_dir + "/CheXpert-fake/attempt3/train.csv",
         transform=transforms, data_aug=data_aug, unique_patients=False)
+    pathologies = dataset.pathologies
+    print("Paths", pathologies)
     datas.append(dataset)
     datas_names.append("chex")
+    finetuning = False
+    test_finetuned = True
 if "google" in cfg.dataset:
     dataset = xrv.datasets.NIH_Google_Dataset(
         imgpath=cfg.dataset_dir + "/images-512-NIH",
@@ -133,13 +137,32 @@ if cfg.weights_filename == "jfhealthcare":
     model = xrv.baseline_models.jfhealthcare.DenseNet() 
 elif cfg.weights_filename == "chexpert":
     model = xrv.baseline_models.chexpert.DenseNet(weights_zip="/home/users/joecohen/scratch/chexpert/chexpert_weights.zip")
+# elif cfg.weights_filename == "custom":
+#     model = torch.load()
 else:
     model = xrv.models.get_model(cfg.weights_filename, apply_sigmoid=True)
-    print("This model", model)
+    print("This model", type(model))
+    if test_finetuned:
+        model = torch.load("/projekte/semrel/Models/Abstractness-Concreteness/Tarun/tarunA/DifussionModel/classifier/output/chex-densenet-e10.pt")
+        # model.load_state_dict(torch.load("/projekte/semrel/Models/Abstractness-Concreteness/Tarun/tarunA/DifussionModel/classifier/output/chex-densenet-e10.pt"))
     model.op_threshs = None
     ## added on 08.01.2023
     if cfg.weights_filename.startswith("densenet"):
         cfg.model = "densenet"
+
+if finetuning:
+    for name, p in model.named_parameters():
+        if name == "features.norm5.weight" or name == "features.norm5.bias" or name == "classifier.weight" or name == "classifier.bias":
+            p.requires_grad = True
+        else:
+            print(name)
+            print("setting to false")
+            p.requires_grad = False
+
+for name, p in model.named_parameters():
+    if p.requires_grad:
+        print("here")
+        print(name, p)
 
 print("datas_names", datas_names)
 
@@ -159,7 +182,7 @@ for i, dataset in enumerate(datas):
     if "patientid" not in dataset.csv:
         dataset.csv["patientid"] = ["{}-{}".format(dataset.__class__.__name__, i) for i in range(len(dataset))]
         
-    gss = sklearn.model_selection.GroupShuffleSplit(train_size=0.1,test_size=0.9, random_state=cfg.seed)
+    gss = sklearn.model_selection.GroupShuffleSplit(train_size=0.2,test_size=0.8, random_state=cfg.seed)
 
     # print(dataset.csv.patientid)
     
@@ -202,13 +225,13 @@ print("test_dataset",test_dataset)
 cfg.output_dir = "output/"
 cfg.shuffle = False
 cfg.lr = 0.001
-cfg.num_epochs = 10
+cfg.num_epochs = 1
 cfg.taskweights = True
 cfg.label_concat_reg = False
 cfg.featurereg = False
 cfg.weightreg = False
 # model.op_threshs = None # prevent pre-trained model calibration
-# model.classifier = torch.nn.Linear(1024,1) # reinitialize classifier
+# model.classifier = torch.nn.Linear(1024,18) # reinitialize classifier
 
 # optimizer = torch.optim.Adam(model.classifier.parameters()) # only train classifier
 # train_utils.train(model, train_dataset, cfg)
@@ -230,60 +253,60 @@ else:
     print("Results are being computed")
     if cfg.cuda:
         model = model.cuda()
-    results = train_utils.valid_test_epoch("test", 0, model, "cuda", test_loader, torch.nn.BCEWithLogitsLoss(), limit=99999999)
+    results = train_utils.valid_test_epoch_single_task("test", 0, model, "cuda", test_loader, torch.nn.BCEWithLogitsLoss(), limit=99999999)
     pickle.dump(results, open(filename, "bw"))
 
-print("Model pathologies:",model.pathologies)
-print("Dataset pathologies:",test_dataset.pathologies)
+# print("Model pathologies:",model.pathologies)
+# print("Dataset pathologies:",test_dataset.pathologies)
 
-perf_dict = {}
-all_threshs = []
-all_min = []
-all_max = []
-all_ppv80 = []
-for i, patho in enumerate(test_dataset.pathologies):
-    opt_thres = np.nan
-    opt_min = np.nan
-    opt_max = np.nan
-    ppv80_thres = np.nan
-    if (len(results[3][i]) > 0) and (len(np.unique(results[3][i])) == 2):
+# perf_dict = {}
+# all_threshs = []
+# all_min = []
+# all_max = []
+# all_ppv80 = []
+# for i, patho in enumerate(test_dataset.pathologies):
+#     opt_thres = np.nan
+#     opt_min = np.nan
+#     opt_max = np.nan
+#     ppv80_thres = np.nan
+#     if (len(results[3][i]) > 0) and (len(np.unique(results[3][i])) == 2):
         
-        #sigmoid
-        all_outputs = 1.0/(1.0 + np.exp(-results[2][i]))
+#         #sigmoid
+#         all_outputs = 1.0/(1.0 + np.exp(-results[2][i]))
         
-        fpr, tpr, thres = sklearn.metrics.roc_curve(results[3][i], all_outputs)
-        pente = tpr - fpr
-        opt_thres = thres[np.argmax(pente)]
-        opt_min = all_outputs.min()
-        opt_max = all_outputs.max()
+#         fpr, tpr, thres = sklearn.metrics.roc_curve(results[3][i], all_outputs)
+#         pente = tpr - fpr
+#         opt_thres = thres[np.argmax(pente)]
+#         opt_min = all_outputs.min()
+#         opt_max = all_outputs.max()
         
-        ppv, recall, thres = sklearn.metrics.precision_recall_curve(results[3][i], all_outputs)
-        ppv80_thres_idx = np.where(ppv > 0.8)[0][0]
-        ppv80_thres = thres[ppv80_thres_idx-1]
+#         ppv, recall, thres = sklearn.metrics.precision_recall_curve(results[3][i], all_outputs)
+#         ppv80_thres_idx = np.where(ppv > 0.8)[0][0]
+#         ppv80_thres = thres[ppv80_thres_idx-1]
         
-        auc = sklearn.metrics.roc_auc_score(results[3][i], all_outputs)
+#         auc = sklearn.metrics.roc_auc_score(results[3][i], all_outputs)
         
-        print(patho, auc)
-        perf_dict[patho] = str(round(auc,2))
+#         print(patho, auc)
+#         perf_dict[patho] = str(round(auc,2))
         
-    else:
-        perf_dict[patho] = "-"
+#     else:
+#         perf_dict[patho] = "-"
         
-    all_threshs.append(opt_thres)
-    all_min.append(opt_min)
-    all_max.append(opt_max)
-    all_ppv80.append(ppv80_thres)
+#     all_threshs.append(opt_thres)
+#     all_min.append(opt_min)
+#     all_max.append(opt_max)
+#     all_ppv80.append(ppv80_thres)
 
     
-print("pathologies",test_dataset.pathologies)
+# print("pathologies",test_dataset.pathologies)
     
-print("op_threshs",str(all_threshs).replace("nan","np.nan"))
+# print("op_threshs",str(all_threshs).replace("nan","np.nan"))
     
-print("min",str(all_min).replace("nan","np.nan"))
+# print("min",str(all_min).replace("nan","np.nan"))
     
-print("max",str(all_max).replace("nan","np.nan"))
+# print("max",str(all_max).replace("nan","np.nan"))
 
-print("ppv80",str(all_ppv80).replace("nan","np.nan"))
+# print("ppv80",str(all_ppv80).replace("nan","np.nan"))
     
     
 if cfg.mdtable:

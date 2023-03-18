@@ -1,5 +1,4 @@
 LICENSE
-README.md
 setup.py
 guided_diffusion.egg-info/PKG-INFO
 guided_diffusion.egg-info/SOURCES.txt

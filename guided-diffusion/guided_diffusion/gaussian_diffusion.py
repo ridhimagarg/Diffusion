@@ -202,6 +202,13 @@ class GaussianDiffusion:
         if noise is None:
             noise = th.randn_like(x_start)
         assert noise.shape == x_start.shape
+        noised_image = _extract_into_tensor(self.sqrt_alphas_cumprod, t, x_start.shape) * x_start + _extract_into_tensor(self.sqrt_one_minus_alphas_cumprod, t, x_start.shape) * noise
+        print(noised_image.shape)
+        img_viz = ((noised_image + 1) * 127.5).clamp(0, 255).to(th.uint8)
+        img_viz = img_viz.permute(0, 2, 3, 1)
+        print(img_viz.cpu().detach().numpy()[0].shape)
+        im = plt.imshow(img_viz.cpu().detach().numpy()[0])
+        plt.savefig("noise_image_"+str(t))
         return (
             _extract_into_tensor(self.sqrt_alphas_cumprod, t, x_start.shape) * x_start
             + _extract_into_tensor(self.sqrt_one_minus_alphas_cumprod, t, x_start.shape)

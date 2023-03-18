@@ -234,6 +234,7 @@ class DenseNet(nn.Module):
                     if not hasattr(mod, "_non_persistent_buffers_set"):
                         mod._non_persistent_buffers_set = set()
 
+                # print("Loaded model dict", savedmodel.state_dict())
                 self.load_state_dict(savedmodel.state_dict())
             except Exception as e:
                 print("Loading failure. Check weights file:", self.weights_filename_local)
