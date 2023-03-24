@@ -7,12 +7,12 @@ We have released checkpoints for the main models in the paper. Before using thes
 
 Here are the download links for each model trained from scratch checkpoint:
 
- * Model 1 diffusion [model-1.pt]()
- * Model 2 diffusion [model-2.pt]()
- * Model 3 diffusion [model-3.pt]()
- * Model 4 diffusion [model-4.pt]()
- * Model 5 diffusion [model-5.pt]()
- * Classifier [classifier.pt]
+ * Model 1 diffusion [model-1.pt](https://github.com/ridhimagarg/Diffusion/releases/download/v1/model090000.pt)
+ * Model 2 diffusion [model-2.pt](https://github.com/ridhimagarg/Diffusion/releases/download/v1/model060000.pt)
+ * Model 3 diffusion [model-3.pt](https://github.com/ridhimagarg/Diffusion/releases/download/v1/model070000.pt)
+ * Model 4 diffusion [model-4.pt](https://github.com/ridhimagarg/Diffusion/releases/download/v1/model100000.pt)
+ * Model 5 diffusion [model-5.pt](https://github.com/ridhimagarg/Diffusion/releases/download/v1/model100000.pt)
+ * Classifier [classifier.pt](https://github.com/ridhimagarg/Diffusion/releases/download/v1/model085000.pt)
  
 
 Here are the download links for finetuned model
