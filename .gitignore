@@ -25,3 +25,5 @@ results/
 train.csv
 
 extras/torchxrayvision/scripts/output/
+
+classifier/output

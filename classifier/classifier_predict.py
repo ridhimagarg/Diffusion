@@ -20,6 +20,7 @@ import random
 import train_utils
 
 import torchxrayvision as xrv
+import matplotlib.pyplot as plt
 # from torchxrayvision import dataset
 
 
@@ -80,14 +81,14 @@ if "pc" in cfg.dataset:
 if "chex" in cfg.dataset:
     dataset = xrv.datasets.CheX_Dataset(
         imgpath=cfg.dataset_dir + "/CheXpert-fake/attempt3",
-        csvpath=cfg.dataset_dir + "/CheXpert-fake/attempt3/train.csv",
+        csvpath=cfg.dataset_dir + "/CheXpert-fake/attempt3/test.csv",
         transform=transforms, data_aug=data_aug, unique_patients=False)
     pathologies = dataset.pathologies
     print("Paths", pathologies)
     datas.append(dataset)
     datas_names.append("chex")
-    finetuning = False
-    test_finetuned = True
+    finetuning = True
+    test_finetuned = False
 if "google" in cfg.dataset:
     dataset = xrv.datasets.NIH_Google_Dataset(
         imgpath=cfg.dataset_dir + "/images-512-NIH",
@@ -225,7 +226,7 @@ print("test_dataset",test_dataset)
 cfg.output_dir = "output/"
 cfg.shuffle = False
 cfg.lr = 0.001
-cfg.num_epochs = 1
+cfg.num_epochs = 100
 cfg.taskweights = True
 cfg.label_concat_reg = False
 cfg.featurereg = False
@@ -234,27 +235,27 @@ cfg.weightreg = False
 # model.classifier = torch.nn.Linear(1024,18) # reinitialize classifier
 
 # optimizer = torch.optim.Adam(model.classifier.parameters()) # only train classifier
-# train_utils.train(model, train_dataset, cfg)
+train_utils.train(model, train_dataset, cfg)
 
 # model = torch.load("output/chex-densenet-best.pt")
 
 
-test_loader = torch.utils.data.DataLoader(test_dataset,
-                                           batch_size=cfg.batch_size,
-                                           shuffle=False,
-                                           num_workers=cfg.threads, pin_memory=cfg.cuda)
+# test_loader = torch.utils.data.DataLoader(test_dataset,
+#                                            batch_size=cfg.batch_size,
+#                                            shuffle=False,
+#                                            num_workers=cfg.threads, pin_memory=cfg.cuda)
 
-filename = "results_" + os.path.basename(cfg.weights_filename).split(".")[0] + "_" + "-".join(datas_names) + ".pkl"
-print(filename)
-if os.path.exists(filename):
-    print("Results already computed")
-    results = pickle.load(open(filename, "br"))
-else:
-    print("Results are being computed")
-    if cfg.cuda:
-        model = model.cuda()
-    results = train_utils.valid_test_epoch_single_task("test", 0, model, "cuda", test_loader, torch.nn.BCEWithLogitsLoss(), limit=99999999)
-    pickle.dump(results, open(filename, "bw"))
+# filename = "results_" + os.path.basename(cfg.weights_filename).split(".")[0] + "_" + "-".join(datas_names) + ".pkl"
+# print(filename)
+# if os.path.exists(filename):
+#     print("Results already computed")
+#     results = pickle.load(open(filename, "br"))
+# else:
+#     print("Results are being computed")
+#     if cfg.cuda:
+#         model = model.cuda()
+#     results = train_utils.valid_test_epoch_single_task("test", 0, model, "cuda", test_loader, torch.nn.BCEWithLogitsLoss(), limit=99999999)
+#     pickle.dump(results, open(filename, "bw"))
 
 # print("Model pathologies:",model.pathologies)
 # print("Dataset pathologies:",test_dataset.pathologies)

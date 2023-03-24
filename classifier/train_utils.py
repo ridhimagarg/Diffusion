@@ -21,6 +21,7 @@ def tqdm(*args, **kwargs):
             tqdm_base._decr_instances(instance)
     return tqdm_base(*args, **kwargs)
 #from tqdm.auto import tqdm
+import matplotlib.pyplot as plt
 
 ## added on 08.01.2023
 parser = argparse.ArgumentParser()
@@ -136,6 +137,9 @@ def train(model, dataset, cfg):
 
     model.to(device)
     
+    train_losses = []
+    val_losses = []
+
     for epoch in range(start_epoch, cfg.num_epochs):
 
         avg_loss = train_epoch(cfg=cfg,
@@ -145,6 +149,8 @@ def train(model, dataset, cfg):
                                optimizer=optim,
                                train_loader=train_loader,
                                criterion=criterion)
+
+        train_losses.append(avg_loss)
         
         avg_loss, auc_valid = valid_test_epoch_single_task(name='Valid',
                                      epoch=epoch,
@@ -152,6 +158,8 @@ def train(model, dataset, cfg):
                                      device=device,
                                      data_loader=valid_loader,
                                      criterion=criterion)
+        
+        val_losses.append(avg_loss)
 
         # if np.mean(auc_valid) > best_metric:
         #     print(f"Epoch at which best auc {epoch}")
@@ -175,6 +183,17 @@ def train(model, dataset, cfg):
 
         torch.save(model, join(cfg.output_dir, f'{dataset_name}-e{epoch + 1}.pt'))
 
+    print(list(range(len(train_losses))))
+    plt.plot(list(range(len(train_losses))), train_losses, linestyle='--', marker='o', color='b', label="Training loss")
+    plt.plot(list(range(len(val_losses))), val_losses, linestyle='--', marker='o', color='tab:pink', label="Validation loss")
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.legend()
+    
+    plt.savefig("train_val_losses.png")
+    plt.clf()
+
+    
     return metrics, best_metric, weights_for_best_validauc
 
 
@@ -255,6 +274,8 @@ def train_epoch(cfg, epoch, model, device, train_loader, optimizer, criterion, l
         # print("Loss", loss) 
         # print("Average loss", avg_loss)
         optimizer.step()
+
+    # print("Average loss", avg_loss)
     t.set_description(f'Epoch {epoch + 1} - Train - Loss = {np.mean(avg_loss):4.4f}')
     print(f'Epoch {epoch + 1} - Train - Loss = {np.mean(avg_loss):4.4f}')
     return np.mean(avg_loss)

@@ -117,10 +117,10 @@ plt.clf()
 
 ## classwise for each timesteps
 finetuning_timesteps =[18000, 28000, 36000]
-fid_class_0 = [26.37,40.78]
-sfid_class_0 = [109.10,109.06]
-fid_class_1 = [52.92,43.99]
-sfid_class_1 = [126.09,106.08]
+fid_class_0 = [26.37,40.78, 32.15]
+sfid_class_0 = [109.10,109.06, 103.84]
+fid_class_1 = [52.92,43.99, 30.59]
+sfid_class_1 = [126.09,106.08, 105.46]
  
 fig = plt.figure()      
 # ax = fig.add_subplot(111)

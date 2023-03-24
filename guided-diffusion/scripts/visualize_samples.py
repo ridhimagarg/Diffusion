@@ -13,34 +13,37 @@ import os
 # array = np.load(os.path.join(path, "samples_5000x256x256x3.npz"))
 # foldername = "samples_5000x256x256x3"
 
-path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations_base/5000_labels_256_256_3_reference_batch.npz"
-array = np.load(path)
+path = "/mount/arbeitsdaten/mudcat/Resources/Multimedia-Commons/dataset/CheXpertResults/evaluations/evaluations_base5000_multilabel_256_256_3_reference_batch.npzopenai-2023-03-03-21-58-57-814828samples_5000x256x256x3.npzopenai-2023-03-10-19-34-12-359100/"
+foldername = "class_17.0sample"
+array = np.load(os.path.join(path, "class_17.0sample.npz"))
+
+# array = np.load(path)
 
 print(array.files)
 
-print(array["arr_1"])
+# print(array["arr_1"])
 # print(array['arr_0'].shape)
 # print(array['arr_0'][10:20])
 # print(array["arr_1"][10:20])
 
-# samples = array["arr_0"]
+samples = array["arr_0"]
 
 # # print(samples.shape[0])
 
 # print(samples[0].shape)
 
-# os.mkdir(os.path.join(path, foldername))
+os.mkdir(os.path.join(path, foldername))
 
-# for img_idx in range(samples.shape[0]):
+for img_idx in range(samples.shape[0]):
 
-#     print("here")
+    print("here")
 
-#     filename = "sample_" + str(img_idx) + ".png"
-#     # cv2.imshow("test", samples[img_idx])
-#     # cv2.waitKey(0) 
+    filename = "sample_" + str(img_idx) + ".png"
+    # cv2.imshow("test", samples[img_idx])
+    # cv2.waitKey(0) 
   
-#     # #closing all open windows 
-#     # cv2.destroyAllWindows() 
-#     print(os.path.join(path, foldername, filename))
+    # #closing all open windows 
+    # cv2.destroyAllWindows() 
+    print(os.path.join(path, foldername, filename))
     
-#     cv2.imwrite(os.path.join(path, foldername, filename), samples[img_idx])
+    cv2.imwrite(os.path.join(path, foldername, filename), samples[img_idx])
